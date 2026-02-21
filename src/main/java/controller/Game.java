@@ -14,6 +14,7 @@ public class Game extends BaseGame{
     private Moonlander lander;
     private int horizontal = 0;
     private int vertical = 0;
+    private boolean debug = false;
 
     private long startTime;
     private long elapsedTime;
@@ -58,26 +59,35 @@ public class Game extends BaseGame{
 
         // Fuel Bar
         g.setColor(Color.GREEN);
-        g.fillRect(20, 20, (int) (lander.getFuel()*2), 20);
+        g.fillRect(20, 20, (int) (lander.getFuel() * 2), 20);
         g.setColor(Color.BLACK);
         g.drawRect(20, 20, 200, 20);
 
         // Status
         g.setColor(Color.YELLOW);
         switch(lander.getState()) {
-            case LANDED -> g.drawString("LANDED SUCCESSFULLY", panelWidth/2 - 80, 50);
-            case CRASHED -> g.drawString("GAME OVER - CRASHED", panelWidth/2 - 80, 50);
+            case LANDED -> g.drawString("LANDED SUCCESSFULLY", panelWidth/2 - 80, panelHeight / 2);
+            case CRASHED -> g.drawString("GAME OVER - CRASHED", panelWidth/2 - 80, panelHeight / 2);
             default -> {}
         }
 
-        // Fuel & Velocity
-        g.setColor(Color.CYAN);
-        g.drawString("Fuel: " + (int)lander.getFuel(), 20, 60);
-        g.drawString("VX: " + String.format("%.2f", lander.getVelocity().getX()), 20, 80);
-        g.drawString("VY: " + String.format("%.2f", lander.getVelocity().getY()), 20, 100);
-
         g.setColor(Color.MAGENTA);
-        g.drawString("Time: " + elapsedTime / 1000 + "s", panelWidth - 100, 40);
+        g.drawString("Time: " + elapsedTime / 1000 + "s", panelWidth - 100, 20);
+
+        if(debug){
+            g.setColor(Color.ORANGE);
+            g.drawString("DEBUG MODE", 20, 60);
+            g.drawString("Pos X: " + String.format("%.2f", lander.getPosition().getX()), 20, 80);
+            g.drawString("Pos Y: " + String.format("%.2f", lander.getPosition().getY()), 20, 100);
+            g.drawString("Vel X: " + String.format("%.2f", lander.getVelocity().getX()), 20, 120);
+            g.drawString("Vel Y: " + String.format("%.2f", lander.getVelocity().getY()), 20, 140);
+            g.drawString("Acc X: " + String.format("%.2f", lander.getAcceleration().getX()), 20, 160);
+            g.drawString("Acc Y: " + String.format("%.2f", lander.getAcceleration().getY()), 20, 180);
+            g.drawString("Fuel: " + String.format("%.2f", lander.getFuel()), 20, 200);
+
+            g.setColor(Color.RED);
+            g.drawRect(landerX, landerY - 10, 20, 10);
+        }
     }
 
     @Override
@@ -94,6 +104,7 @@ public class Game extends BaseGame{
             case KeyEvent.VK_S -> vertical = 1;
             case KeyEvent.VK_A -> horizontal = -1;
             case KeyEvent.VK_D -> horizontal = 1;
+            case KeyEvent.VK_G -> debug = !debug;
             case KeyEvent.VK_R -> restart();
         }
     }
