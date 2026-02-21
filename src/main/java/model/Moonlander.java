@@ -60,4 +60,8 @@ public class Moonlander{
             velocity.reset();
         }
     }
+
+    public void setState(State state){
+        this.state = state;
+    }
 }

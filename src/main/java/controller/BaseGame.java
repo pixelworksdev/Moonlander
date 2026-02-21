@@ -1,13 +1,13 @@
 package controller;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-@Log
+@Slf4j
 public abstract class BaseGame{
     protected JPanel view;
     private Timer timer;

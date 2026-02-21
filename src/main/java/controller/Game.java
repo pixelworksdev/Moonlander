@@ -1,6 +1,6 @@
 package controller;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import model.Autopilot;
 import model.Moonlander;
 import utils.*;
@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-@Log
+@Slf4j
 public class Game extends BaseGame{
     private Moonlander lander;
     private Autopilot autopilot;
@@ -29,11 +29,8 @@ public class Game extends BaseGame{
     public void update(){
         if(lander.getState() == State.RUNNING){
             int groundY = view.getHeight() - 50;
-
             int verticalInput = autopilot.isActive() ? autopilot.computeVertical(lander, groundY) : vertical;
-
             lander.update(horizontal, verticalInput, groundY);
-
             elapsedTime = System.currentTimeMillis() - startTime;
         }
     }
@@ -62,6 +59,23 @@ public class Game extends BaseGame{
         int landerY = (int) lander.getPosition().getY();
         if (landerY > groundY) landerY = groundY;
         g.fillRect(landerX, landerY - 10, 20, 10);
+
+        // Thrust Animation
+        g.setColor(Color.ORANGE);
+        int thrustLength = 10;
+
+        if(vertical == -1){
+            g.drawLine(landerX + 10, landerY, landerX + 10, landerY + thrustLength);
+        }
+        if(vertical == 1){
+            g.drawLine(landerX + 10, landerY - 10, landerX + 10, landerY - 10 - thrustLength);
+        }
+        if(horizontal == -1){
+            g.drawLine(landerX, landerY - 5, landerX - thrustLength, landerY - 5);
+        }
+        if(horizontal == 1){
+            g.drawLine(landerX + 20, landerY - 5, landerX + 20 + thrustLength, landerY - 5);
+        }
 
         //  Fuel Bar
         int barWidth = (int) (panelWidth * 0.25);
@@ -112,6 +126,18 @@ public class Game extends BaseGame{
             g.drawString("Fuel: " + String.format("%.2f", lander.getFuel()), 20, 200);
             g.setColor(Color.RED);
             g.drawRect(landerX, landerY - 10, 20, 10);
+
+            int scale = 50;
+            int landerCX = landerX + 10;
+            int landerCY = landerY - 5;
+
+            // Velocity Arrow
+            g.setColor(Color.RED);
+            g.drawLine(landerCX, landerCY, landerCX + (int)(lander.getVelocity().getX()*scale), landerCY + (int)(lander.getVelocity().getY()*scale));
+
+            // Acceleration Arrow
+            g.setColor(Color.GREEN);
+            g.drawLine(landerCX, landerCY, landerCX + (int)(lander.getAcceleration().getX()*scale*5), landerCY + (int)(lander.getAcceleration().getY()*scale*5));
         }
 
         // Autopilot Status
@@ -133,9 +159,19 @@ public class Game extends BaseGame{
             case KeyEvent.VK_S -> vertical = 1;
             case KeyEvent.VK_A -> horizontal = -1;
             case KeyEvent.VK_D -> horizontal = 1;
-            case KeyEvent.VK_G -> debug = !debug;
-            case KeyEvent.VK_P -> autopilot.setActive(!autopilot.isActive());
+            case KeyEvent.VK_G -> {debug = !debug; log.info("Debug info shown|hidden");}
+            case KeyEvent.VK_P -> {autopilot.setActive(!autopilot.isActive()); log.info("Autopilot started|stopped");}
             case KeyEvent.VK_R -> restart();
+            case KeyEvent.VK_SPACE -> {
+                if(lander.getState() == State.RUNNING){
+                    lander.setState(State.PAUSED);
+                    log.info("Game Paused");
+                }else if(lander.getState() == State.PAUSED){
+                    lander.setState(State.RUNNING);
+                    log.info("Game Resumed");
+                    startTime = System.currentTimeMillis() - elapsedTime;
+                }
+            }
         }
     }
 
