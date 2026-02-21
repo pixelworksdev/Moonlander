@@ -41,8 +41,6 @@ public class Moonlander{
         velocity.add(acceleration);
         position.add(velocity);
         acceleration.setX(0);
-
-        checkLanding(groundY);
     }
 
     private void checkLanding(double groundY){

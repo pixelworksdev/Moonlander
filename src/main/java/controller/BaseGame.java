@@ -28,6 +28,7 @@ public abstract class BaseGame{
         view.repaint();
     }
 
+    abstract public void initGame(JPanel view);
     abstract public void update();
     abstract public void draw();
     abstract public void drawInGraphics(Graphics2D g2);

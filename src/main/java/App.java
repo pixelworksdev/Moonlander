@@ -14,13 +14,12 @@ public class App{
         view.setFocusable(true);
 
         JFrame frame = new JFrame();
-        frame.setTitle("2d-Game Template");
+        frame.setTitle("Moonlander");
         frame.setSize(400, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         frame.add(view);
-
         frame.setVisible(true);
+        model.initGame(view);
 
         model.start(view);
     }

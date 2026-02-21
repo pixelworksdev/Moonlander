@@ -2,9 +2,12 @@ package controller;
 
 import lombok.extern.slf4j.Slf4j;
 import model.Autopilot;
+import model.LandingZone;
 import model.Moonlander;
+import model.Terrain;
 import utils.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -13,6 +16,7 @@ import java.awt.event.MouseEvent;
 public class Game extends BaseGame{
     private Moonlander lander;
     private Autopilot autopilot;
+    private Terrain terrain;
 
     private int horizontal = 0;
     private int vertical = 0;
@@ -22,17 +26,62 @@ public class Game extends BaseGame{
     private long elapsedTime;
 
     public Game(){
+        lander = new Moonlander(new Vector2D(200, 50), 100);
+        autopilot = new Autopilot();
+        horizontal = 0;
+        vertical = 0;
+        elapsedTime = 0;
+        log.info("Game object created");
+    }
+
+    @Override
+    public void initGame(JPanel view){
+        super.start(view);
+        terrain = new Terrain(view.getWidth(), view.getHeight());
         restart();
     }
 
     @Override
     public void update(){
-        if(lander.getState() == State.RUNNING){
-            int groundY = view.getHeight() - 50;
-            int verticalInput = autopilot.isActive() ? autopilot.computeVertical(lander, groundY) : vertical;
-            lander.update(horizontal, verticalInput, groundY);
-            elapsedTime = System.currentTimeMillis() - startTime;
+        if(lander.getState() != State.RUNNING) return;
+
+        int verticalInput = autopilot.isActive() ? autopilot.computeVertical(lander, view.getHeight()) : vertical;
+
+        lander.update(horizontal, verticalInput, view.getHeight() - 50);
+
+        double landerXCenter = lander.getPosition().getX() + 10;
+        double landerBottomY = lander.getPosition().getY() + 10;
+
+        int terrainY = terrain.getHeightAt((int)landerXCenter);
+
+        if(landerBottomY >= terrainY){
+            lander.getPosition().setY(terrainY - 10 + 5);
+
+            double maxSafeVertical = 2.0;
+            double maxSafeHorizontal = 1.0;
+
+            boolean safeLanding = false;
+
+            for(LandingZone zone : terrain.getZones()){
+                Rectangle rect = zone.getZone();
+                if(landerXCenter >= rect.x && landerXCenter <= rect.x + rect.width && landerBottomY >= rect.y && landerBottomY <= rect.y + rect.height + 3){
+                    safeLanding = true;
+                    break;
+                }
+            }
+
+            if(safeLanding && Math.abs(lander.getVelocity().getY()) <= maxSafeVertical && Math.abs(lander.getVelocity().getX()) <= maxSafeHorizontal){
+                lander.setState(State.LANDED);
+                lander.getVelocity().reset();
+                log.info("Landed safely in a landing zone!");
+            }else{
+                lander.setState(State.CRASHED);
+                lander.getVelocity().reset();
+                log.info("Crashed!");
+            }
         }
+
+        elapsedTime = System.currentTimeMillis() - startTime;
     }
 
     @Override
@@ -76,6 +125,9 @@ public class Game extends BaseGame{
         if(horizontal == 1){
             g.drawLine(landerX + 20, landerY - 5, landerX + 20 + thrustLength, landerY - 5);
         }
+
+        // Terrain / Landing Zones
+        terrain.draw(g);
 
         //  Fuel Bar
         int barWidth = (int) (panelWidth * 0.25);
