@@ -60,30 +60,46 @@ public class Game extends BaseGame{
         g.setColor(Color.WHITE);
         int landerX = (int) lander.getPosition().getX();
         int landerY = (int) lander.getPosition().getY();
-        if(landerY > groundY) landerY = groundY;
+        if (landerY > groundY) landerY = groundY;
         g.fillRect(landerX, landerY - 10, 20, 10);
 
-        // Fuel Bar
+        //  Fuel Bar
+        int barWidth = (int) (panelWidth * 0.25);
+        int barHeight = 20;
+        int fuelWidth = (int) (lander.getFuel() / 100.0 * barWidth);
+
         g.setColor(Color.GREEN);
-        g.fillRect(20, 20, (int) (lander.getFuel() * 2), 20);
-        g.setColor(Color.BLACK);
-        g.drawRect(20, 20, 200, 20);
+        g.fillRect(20, 20, fuelWidth, barHeight);
+        g.setColor(Color.WHITE);
+        g.drawRect(20, 20, barWidth, barHeight);
+
+        // Fuel Text
+        g.setColor(Color.BLUE);
+        g.drawString("Fuel: " + (int)lander.getFuel(), 25, barHeight + 15);
 
         // Status
         g.setColor(Color.YELLOW);
-        switch(lander.getState()) {
-            case LANDED -> g.drawString("LANDED SUCCESSFULLY", panelWidth/2 - 80, panelHeight / 2);
-            case CRASHED -> g.drawString("GAME OVER - CRASHED", panelWidth/2 - 80, panelHeight / 2);
-            default -> {}
+        String status = switch (lander.getState()){
+            case LANDED -> "LANDED SUCCESSFULLY";
+            case CRASHED -> "GAME OVER - CRASHED";
+            default -> "";
+        };
+
+        if(!status.isEmpty()){
+            int textWidth = g.getFontMetrics().stringWidth(status);
+            g.drawString(status, panelWidth/2 - textWidth/2, 35);
         }
 
-        // Autopilot Status
+        // Timer
         g.setColor(Color.MAGENTA);
-        g.drawString("Autopilot: " + (autopilot.isActive() ? "ON" : "OFF"), 20, 320);
+        long seconds = elapsedTime / 1000;
+        long minutes = seconds / 60;
+        seconds %= 60;
+        String timeText = String.format("Time: %02d:%02d", minutes, seconds);
+        int timeWidth = g.getFontMetrics().stringWidth(timeText);
+        g.drawString(timeText, panelWidth - timeWidth - 20, 35);
 
-        g.setColor(Color.MAGENTA);
-        g.drawString("Time: " + elapsedTime / 1000 + "s", panelWidth - 100, 20);
-
+        // Debug & Autopilot
         if(debug){
             g.setColor(Color.ORANGE);
             g.drawString("DEBUG MODE", 20, 60);
@@ -94,10 +110,13 @@ public class Game extends BaseGame{
             g.drawString("Acc X: " + String.format("%.2f", lander.getAcceleration().getX()), 20, 160);
             g.drawString("Acc Y: " + String.format("%.2f", lander.getAcceleration().getY()), 20, 180);
             g.drawString("Fuel: " + String.format("%.2f", lander.getFuel()), 20, 200);
-
             g.setColor(Color.RED);
             g.drawRect(landerX, landerY - 10, 20, 10);
         }
+
+        // Autopilot Status
+        g.setColor(Color.MAGENTA);
+        g.drawString("Autopilot: " + (autopilot.isActive() ? "ON" : "OFF"), panelWidth - timeWidth - 20, 55);
     }
 
     @Override
