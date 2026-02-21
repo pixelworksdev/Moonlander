@@ -12,7 +12,6 @@ import java.awt.event.MouseListener;
 
 @Log
 public class PaintArea extends JPanel{
-
     private final BaseGame model;
 
     public PaintArea(BaseGame model){

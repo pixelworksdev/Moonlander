@@ -1,6 +1,7 @@
 package controller;
 
 import lombok.extern.java.Log;
+import model.Autopilot;
 import model.Moonlander;
 import utils.*;
 
@@ -10,8 +11,9 @@ import java.awt.event.MouseEvent;
 
 @Log
 public class Game extends BaseGame{
-
     private Moonlander lander;
+    private Autopilot autopilot;
+
     private int horizontal = 0;
     private int vertical = 0;
     private boolean debug = false;
@@ -27,7 +29,11 @@ public class Game extends BaseGame{
     public void update(){
         if(lander.getState() == State.RUNNING){
             int groundY = view.getHeight() - 50;
-            lander.update(horizontal, vertical, groundY);
+
+            int verticalInput = autopilot.isActive() ? autopilot.computeVertical(lander, groundY) : vertical;
+
+            lander.update(horizontal, verticalInput, groundY);
+
             elapsedTime = System.currentTimeMillis() - startTime;
         }
     }
@@ -71,6 +77,10 @@ public class Game extends BaseGame{
             default -> {}
         }
 
+        // Autopilot Status
+        g.setColor(Color.MAGENTA);
+        g.drawString("Autopilot: " + (autopilot.isActive() ? "ON" : "OFF"), 20, 320);
+
         g.setColor(Color.MAGENTA);
         g.drawString("Time: " + elapsedTime / 1000 + "s", panelWidth - 100, 20);
 
@@ -105,6 +115,7 @@ public class Game extends BaseGame{
             case KeyEvent.VK_A -> horizontal = -1;
             case KeyEvent.VK_D -> horizontal = 1;
             case KeyEvent.VK_G -> debug = !debug;
+            case KeyEvent.VK_P -> autopilot.setActive(!autopilot.isActive());
             case KeyEvent.VK_R -> restart();
         }
     }
@@ -117,8 +128,9 @@ public class Game extends BaseGame{
         }
     }
 
-    private void restart() {
+    private void restart(){
         lander = new Moonlander(new Vector2D(200, 50), 100);
+        autopilot = new Autopilot();
         horizontal = 0;
         vertical = 0;
         startTime = System.currentTimeMillis();
