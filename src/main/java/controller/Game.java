@@ -15,8 +15,11 @@ public class Game extends BaseGame{
     private int horizontal = 0;
     private int vertical = 0;
 
+    private long startTime;
+    private long elapsedTime;
+
     public Game(){
-        lander = new Moonlander(new Vector2D(200, 50), 100);
+        restart();
     }
 
     @Override
@@ -24,43 +27,17 @@ public class Game extends BaseGame{
         if(lander.getState() == State.RUNNING){
             int groundY = view.getHeight() - 50;
             lander.update(horizontal, vertical, groundY);
+            elapsedTime = System.currentTimeMillis() - startTime;
         }
     }
 
     @Override
-    public void draw(){
-        Graphics2D g = (Graphics2D) view.getGraphics();
-        if(g == null) return;
-
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, view.getWidth(), view.getHeight());
-
-        g.setColor(Color.GRAY);
-        g.fillRect(0, 500, view.getWidth(), 50);
-
-        g.setColor(Color.WHITE);
-        int landerX = (int) lander.getPosition().getX();
-        int landerY = (int) lander.getPosition().getY();
-        g.fillRect(landerX, landerY - 10, 20, 10);
-
-        g.setColor(Color.GREEN);
-        g.fillRect(20, 20, (int) (lander.getFuel()*2), 20);
-        g.setColor(Color.BLACK);
-        g.drawRect(20, 20, 200, 20);
-
-        g.setColor(Color.YELLOW);
-        switch(lander.getState()) {
-            case LANDED -> g.drawString("LANDED SUCCESSFULLY", 150, 50);
-            case CRASHED -> g.drawString("GAME OVER - CRASHED", 150, 50);
-            default -> {}
-        }
-    }
+    public void draw(){}
 
     @Override
     public void drawInGraphics(Graphics2D g){
         int panelWidth = view.getWidth();
         int panelHeight = view.getHeight();
-
         int groundHeight = 50;
         int groundY = panelHeight - groundHeight;
 
@@ -85,7 +62,7 @@ public class Game extends BaseGame{
         g.setColor(Color.BLACK);
         g.drawRect(20, 20, 200, 20);
 
-        // Status Text
+        // Status
         g.setColor(Color.YELLOW);
         switch(lander.getState()) {
             case LANDED -> g.drawString("LANDED SUCCESSFULLY", panelWidth/2 - 80, 50);
@@ -93,22 +70,26 @@ public class Game extends BaseGame{
             default -> {}
         }
 
+        // Fuel & Velocity
         g.setColor(Color.CYAN);
         g.drawString("Fuel: " + (int)lander.getFuel(), 20, 60);
         g.drawString("VX: " + String.format("%.2f", lander.getVelocity().getX()), 20, 80);
         g.drawString("VY: " + String.format("%.2f", lander.getVelocity().getY()), 20, 100);
+
+        g.setColor(Color.MAGENTA);
+        g.drawString("Time: " + elapsedTime / 1000 + "s", panelWidth - 100, 40);
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e){}
     @Override
-    public void mouseDown(MouseEvent e) {}
+    public void mouseDown(MouseEvent e){}
     @Override
-    public void mouseRelease(MouseEvent e) {}
+    public void mouseRelease(MouseEvent e){}
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        switch(e.getKeyCode()) {
+    public void keyPressed(KeyEvent e){
+        switch(e.getKeyCode()){
             case KeyEvent.VK_W -> vertical = -1;
             case KeyEvent.VK_S -> vertical = 1;
             case KeyEvent.VK_A -> horizontal = -1;
@@ -125,10 +106,12 @@ public class Game extends BaseGame{
         }
     }
 
-    private void restart(){
+    private void restart() {
         lander = new Moonlander(new Vector2D(200, 50), 100);
         horizontal = 0;
         vertical = 0;
+        startTime = System.currentTimeMillis();
+        elapsedTime = 0;
         log.info("Game restarted");
     }
 }
