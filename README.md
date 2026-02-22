@@ -2,8 +2,8 @@
 
 ## Project Overview
 
-**MoonLander** is a small 2D game where the player controls a lunar lander to safely touch down on the moon's surface.  
-The game combines **physics simulation**, **resource management (fuel)**, player controls, and an optional **autopilot feature** to create a fun and challenging experience.
+**MoonLander** is a 2D lunar lander game where the player must safely land on procedurally generated moon terrain.  
+The game combines **physics simulation**, **resource management (fuel)**, player controls, and an optional **autopilot** to create a fun and challenging experience.
 
 ---
 
@@ -11,30 +11,24 @@ The game combines **physics simulation**, **resource management (fuel)**, player
 
 - The player controls the lander using **W/A/S/D** keys.
 - **Thrust consumes fuel**; fuel is limited and crucial for success.
-- The game ends if the lander **crashes** (impact velocity too high) or **runs out of fuel**.
-- Upon landing or crash, the game shows a **clear Game Over status** and pauses.
+- The terrain is **procedurally generated** and contains **multiple landing zones**.
+- Safe landings must occur on a **landing zone** at **low velocities**.
+- The game ends if the lander **crashes** (hits terrain outside landing zones or with excessive speed) or **runs out of fuel**.
+- Game status is clearly displayed: `"LANDED SUCCESSFULLY"` or `"GAME OVER - CRASHED"`.
 - **Restart** is always possible with the **R key**.
 
 ---
 
 ## Features
 
-- **Physics & Gravity** – The lander accelerates due to gravity and thrust.
-- **Fuel System** – Fuel is consumed when using the thrusters; running out ends the game.
-- **Game Status Indicators**:
-    - `"LANDED SUCCESSFULLY"` for gentle landings
-    - `"GAME OVER - CRASHED"` for crashes
-- **Gameplay Timer** – HUD shows the elapsed game time.
-- **Restart Function** – Restart the game after Game Over or a successful landing.
-- **Debug Mode (optional)** – Displays velocity, fuel, and hitboxes for development purposes.
-
----
-
-## Optional / Expandable Features
-
-- **Autopilot** – Automatically controls vertical speed.
-- **Autopilot Toggle** – Can be turned on/off during gameplay.
-- **7-Segment Display** – Optional HUD element for fuel, time, or height.
+- **Procedural Terrain** – Terrain is generated dynamically with multiple landing zones.
+- **Landing Zones** – Specific flat areas where safe landings are possible.
+- **Physics & Gravity** – Vector-based acceleration, velocity, and position updates.
+- **Fuel System** – Thrusters consume fuel; running out ends the game.
+- **Safe Landing Detection** – Landing zones plus speed thresholds determine success.
+- **HUD** – Shows fuel, elapsed time, and game status.
+- **Debug Mode** – Optional display of velocity, acceleration, and hitboxes for development purposes.
+- **Autopilot (optional)** – Can control vertical speed automatically.
 
 ---
 
@@ -43,21 +37,20 @@ The game combines **physics simulation**, **resource management (fuel)**, player
 - **Language:** Java
 - **Graphics/UI:** Graphics2D
 - **Architecture:** MVC-like
-    - **Game** → Controller / Main Logic
-    - **MoonLander** → Model (Physics, Status, Fuel)
-    - **FuelTank** → View / Fuel Display
-- **Game State Management:** RUNNING, LANDED, CRASHED
-- **Physics:** Vector-based position, velocity, and acceleration
+  - **Game** → Controller / Main Logic
+  - **Moonlander** → Model (Physics, Status, Fuel)
+  - **Terrain** → Model (Procedural Surface + Landing Zones)
+- **Game States:** RUNNING, LANDED, CRASHED, PAUSED
+- **Physics:** Vector-based for movement and acceleration
+- **Collision Detection:** Lander vs terrain and landing zones
 
 ---
 
 ## Learning Goals
 
-- Working with **2D physics** and vectors
-- **Resource management** (fuel consumption)
-- Implementing a **game loop** with update & draw methods
-- **Game state management** and pausing
-- HUD elements, **debugging**, and restart functionality
-- Optional extensions: **autopilot** and enhanced UI features
-
----
+- Implementing **2D procedural terrain generation**.
+- Working with **vectors for physics simulation**.
+- Handling **resource management** (fuel).
+- Managing **game state transitions** (running, landed, crashed, paused).
+- Creating **HUD elements**, debug overlays, and restart functionality.
+- Optional: implementing **autopilot logic**.
