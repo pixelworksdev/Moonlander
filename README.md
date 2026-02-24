@@ -16,6 +16,7 @@ The game combines **physics simulation**, **resource management (fuel)**, player
 - The game ends if the lander **crashes** (hits terrain outside landing zones or with excessive speed) or **runs out of fuel**.
 - Game status is clearly displayed: `"LANDED SUCCESSFULLY"` or `"GAME OVER - CRASHED"`.
 - **Restart** is always possible with the **R key**.
+- **Pausing** is always possible with the **SPACE key**.
 
 ---
 
@@ -27,8 +28,8 @@ The game combines **physics simulation**, **resource management (fuel)**, player
 - **Fuel System** – Thrusters consume fuel; running out ends the game.
 - **Safe Landing Detection** – Landing zones plus speed thresholds determine success.
 - **HUD** – Shows fuel, elapsed time, and game status.
-- **Debug Mode** – Optional display of velocity, acceleration, and hitboxes for development purposes.
-- **Autopilot (optional)** – Can control vertical speed automatically.
+- **Debug Mode** - **G key** – Optional display of velocity, acceleration, and hitboxes for development purposes.
+- **Autopilot (optional)** - **P key** – Can control the lander automatically.
 
 ---
 
